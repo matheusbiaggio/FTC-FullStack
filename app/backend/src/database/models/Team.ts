@@ -1,20 +1,20 @@
 import { DataTypes, Model } from 'sequelize';
 import db from '.';
 
-class TeamModel extends Model {
+class Team extends Model {
   declare teamName: string;
 }
 
-TeamModel.init({
+Team.init({
   teamName: {
     allowNull: false,
     type: DataTypes.STRING,
-  }
+  },
 }, {
-  tableName: 'TRYBE_FUTEBOL_CLUBE',
+  modelName: 'teams',
   underscored: true,
   sequelize: db,
   timestamps: false,
 });
 
-export default TeamModel;
+export default Team;
