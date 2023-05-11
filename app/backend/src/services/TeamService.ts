@@ -5,8 +5,8 @@ export default class TeamService {
     private teamModel = new TeamModel(),
   ) { }
 
-  async getAll() {
-    const allTeams = await this.teamModel.getAll();
+  async findAll() {
+    const allTeams = await this.teamModel.findAll();
     return allTeams;
   }
 }

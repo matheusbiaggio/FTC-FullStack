@@ -3,7 +3,7 @@ import Team from '../database/models/Team';
 export default class TeamModel {
   constructor(private team = Team) {}
 
-  async getAll() {
+  async findAll() {
     const teams = await this.team.findAll();
     return teams;
   }
@@ -14,7 +14,7 @@ export default class TeamModel {
   // }
 
   // async getById(id: number) {
-  //   const team = await this.getById(id);
+  //   const team = await this.findByPk(id);
   //   return team;
   // }
 
