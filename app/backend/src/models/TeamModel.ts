@@ -14,7 +14,7 @@ export default class TeamModel {
   // }
 
   // async getById(id: number) {
-  //   const team = await this.findByPk(id);
+  //   const team = await this.getById(id);
   //   return team;
   // }
 
