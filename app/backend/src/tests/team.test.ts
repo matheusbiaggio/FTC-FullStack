@@ -56,4 +56,33 @@ describe('Teste do Team', () => {
       })
     })
   })
+
+  describe('findById', async () => {
+    it('Retorna o time se passar o id válido', async () => {
+      sinon
+        .stub(Team, "findByPk")
+        .resolves(expectedTeams[0] as unknown as Team);
+
+      const { body, status } = await chai
+        .request(app).get('/teams/1');
+
+      expect(status).to.be.equal(200);
+      expect(body).to.be.an('object');
+      expect(body).to.be.deep.equal(expectedTeams[0]);
+    });
+
+    it('Se passado um id inválido, response com status 404 e Team not found', async () => {
+      sinon
+        .stub(Team, "findByPk")
+        .resolves(null);
+
+      const { body, status } = await chai
+        .request(app).get('/teams/3');
+
+      expect(status).to.be.equal(404);
+      expect(body).to.be.an('object');
+      expect(body).to.be.deep.equal({ message: 'Team not found' });
+    })
+  });
+  afterEach(sinon.restore)
 })

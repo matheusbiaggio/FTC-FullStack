@@ -13,10 +13,10 @@ export default class TeamModel {
   //   return team;
   // }
 
-  // async getById(id: number) {
-  //   const team = await this.findByPk(id);
-  //   return team;
-  // }
+  async finById(id: number) {
+    const team = await this.team.findByPk(id);
+    return team;
+  }
 
   // async update(id: number, teamName: string) {
   //   const team = await this.update({ teamName }, { where: { id } });
