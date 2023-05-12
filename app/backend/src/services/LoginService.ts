@@ -3,6 +3,7 @@ import JWT from '../utils/JWT';
 import Login from '../interface/Login';
 import GenerateErro from '../utils/GenerateErro';
 import UserModel from '../models/UserModel';
+import 'express-async-errors';
 
 export default class LoginService {
   constructor(private userModel = new UserModel()) { }
@@ -11,7 +12,7 @@ export default class LoginService {
     const user = await this.userModel.findByEmail(email);
 
     if (!user || !LoginService.verifyPassword(password, user.password)) {
-      throw new GenerateErro(500, 'Invalid email or password');
+      throw new GenerateErro(401, 'Invalid email or password');
     }
 
     const NewAuth = new JWT();

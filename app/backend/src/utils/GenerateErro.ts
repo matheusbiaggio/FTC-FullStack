@@ -1,5 +1,6 @@
 export default class GenerateErro extends Error {
-  constructor(public status = 500, message: string) {
+  constructor(public statusCode: number, message: string) {
     super(message);
+    this.statusCode = statusCode;
   }
 }

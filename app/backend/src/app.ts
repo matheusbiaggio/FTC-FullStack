@@ -1,10 +1,15 @@
 import * as express from 'express';
+import 'express-async-errors';
 import router from './routes';
+import ErrorHandler from './middleware/ErrorHandler';
 
 class App {
   public app: express.Express;
 
-  constructor(private routes: express.Router = router) {
+  constructor(
+    private routes: express.Router = router,
+    private error: express.ErrorRequestHandler = ErrorHandler,
+  ) {
     this.app = express();
 
     this.config();
@@ -13,6 +18,7 @@ class App {
     this.app.get('/', (req, res) => res.json({ ok: true }));
 
     this.app.use(this.routes);
+    this.app.use(this.error);
   }
 
   private config():void {
