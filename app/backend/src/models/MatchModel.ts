@@ -22,10 +22,9 @@ export default class MatchModel {
   //   return team;
   // }
 
-  // async finById(id: number) {
-  //   const team = await this.team.findByPk(id);
-  //   return team;
-  // }
+  async finishMatch(id: number) {
+    return this.match.update({ inProgress: false }, { where: { id } });
+  }
 
   // async update(id: number, teamName: string) {
   //   const team = await this.update({ teamName }, { where: { id } });

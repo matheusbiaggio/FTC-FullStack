@@ -6,17 +6,21 @@ import chaiHttp = require('chai-http');
 import { app } from '../app';
 
 import Match from '../database/models/Match';
-
 import matchMock from './mock/matchMock';
+import JWT from '../utils/JWT';
 
 chai.use(chaiHttp);
 
 const { expect } = chai;
 
+
 describe('Teste do Match', () => {
   afterEach(() => {
     sinon.restore();
   });
+  
+  const jwt = new JWT();
+  const token = jwt.generateToken({ id: 1, email: 'admin@admin.com' });
 
   describe('findAll sem filtro', () => {
     beforeEach(() => {
@@ -54,6 +58,41 @@ describe('Teste do Match', () => {
 
       expect(response.status).to.be.equal(200);
       expect(response.body).to.be.deep.equal(matchMock[0]);
+    });
+  })
+
+  describe('findAll sem filtro', () => {
+    it('Verifica que não é possível alterar o estado da partida sem um token', async () => {
+      const response = await chai.request(app).patch('/matches/2/finish');
+
+      expect(response.status).to.be.equal(401);
+      expect(response.body.message).to.be.equal('Token not found');
+    });
+
+    it('Verifica que não é possível alterar o estado da partida com um token invalido', async () => {
+      const response = await chai.request(app)
+        .patch('/matches/2/finish')
+        .set('Authorization', 'invalid');
+
+      expect(response.status).to.be.equal(401);
+      expect(response.body.message).to.be.equal('Token must be a valid token');
+    });
+
+    it('Verifica que é possível alterar o estado da partida com um token valido', async () => {
+      sinon
+        .stub(Match, 'update')
+        .resolves([1]);
+
+      const { body, status } = await chai
+        .request(app).patch('/matches/2')
+        .auth(token, { type: 'bearer' })
+        .send({
+          homeTeamGoals: 2,
+          awayTeamGoals: 0
+        });
+
+        expect(status).to.be.equal(200);
+        expect(body).to.be.deep.equal({ message: 'Finished' });
     });
   })
 })
