@@ -8,6 +8,15 @@ export default class MatchModel {
     return allMatch;
   }
 
+  async findAllInProgress(inProgress: boolean) {
+    const matchesInProgress = await this.match.scope('withTeams').findAll({
+      where: {
+        inProgress,
+      },
+    });
+    return matchesInProgress;
+  }
+
   // async create(teamName: string) {
   //   const team = await this.create({ teamName });
   //   return team;

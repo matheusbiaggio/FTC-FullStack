@@ -6,7 +6,12 @@ export default class MatchService {
     private matchModel = new MatchModel(),
   ) { }
 
-  async findAll() {
+  async findAll(inProgress?: string | undefined) {
+    if (inProgress !== undefined) {
+      const inProgressVerify = inProgress === 'true';
+      const matchesInProgress = await this.matchModel.findAllInProgress(inProgressVerify);
+      return matchesInProgress;
+    }
     const allMatch = await this.matchModel.findAll();
     return allMatch;
   }

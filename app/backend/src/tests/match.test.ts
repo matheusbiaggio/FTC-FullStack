@@ -41,5 +41,19 @@ describe('Teste do Match', () => {
         expect(body).to.be.an('array');
         expect(body).to.be.deep.equal(matchMock);
     })
+
+    it('Retorna um array com todas as partidas em progresso quando passado via query', async () => {
+      const response = await chai.request(app).get('/matches?inProgress=true');
+
+      expect(response.status).to.be.equal(200);
+      expect(response.body).to.be.deep.equal(matchMock[1]);
+    });
+
+    it('Retorna um array com todas as partidas que não estão em progresso quando passado via query', async () => {
+      const response = await chai.request(app).get('/matches?inProgress=false');
+
+      expect(response.status).to.be.equal(200);
+      expect(response.body).to.be.deep.equal(matchMock[0]);
+    });
   })
 })
