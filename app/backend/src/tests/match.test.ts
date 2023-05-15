@@ -61,7 +61,7 @@ describe('Teste do Match', () => {
     });
   })
 
-  describe('findAll sem filtro', () => {
+  describe('findAll com filtro', () => {
     it('Verifica que não é possível alterar o estado da partida sem um token', async () => {
       const response = await chai.request(app).patch('/matches/2/finish');
 
@@ -95,4 +95,38 @@ describe('Teste do Match', () => {
         expect(body).to.be.deep.equal({ message: 'Finished' });
     });
   })
+
+  describe('Update passando o id por url e homeTeamGoals e awayTeamGoals no body', () => {
+    it('Verifica que não é possível alterar o estado da partida sem um token', async () => {
+      const response = await chai.request(app)
+        .patch('/matches/1');
+
+      expect(response.status).to.be.equal(401);
+      expect(response.body.message).to.be.equal('Token not found');
+    });
+    it('Verifica que não é possível alterar o estado da partida com um token invalido', async () => {
+      const response = await chai.request(app)
+        .patch('/matches/1')
+        .set('Authorization', 'invalid_token');
+
+      expect(response.status).to.be.equal(401);
+      expect(response.body.message).to.be.equal('Token must be a valid token');
+    });
+    it('Com um token válido, retorna o resultado parcial da partida', async () => {
+      sinon
+        .stub(Match, 'update')
+        .resolves([1]);
+
+      const { body, status } = await chai
+        .request(app).patch('/matches/1')
+        .auth(token, { type: 'bearer' })
+        .send({
+          homeTeamGoals: 2,
+          awayTeamGoals: 0
+        });
+
+        expect(status).to.be.equal(200);
+        expect(body).to.be.deep.equal({ message: 'Update' });
+    });
+  });
 })
