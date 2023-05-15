@@ -19,4 +19,8 @@ export default class MatchService {
   async finishMatch(id: number) {
     await this.matchModel.finishMatch(id);
   }
+
+  async updateMatch(id: number, homeTeamGoals: number, awayTeamGoals: number) {
+    await this.matchModel.updateMatch(id, homeTeamGoals, awayTeamGoals);
+  }
 }

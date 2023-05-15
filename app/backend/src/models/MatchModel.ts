@@ -17,14 +17,18 @@ export default class MatchModel {
     return matchesInProgress;
   }
 
+  async finishMatch(id: number) {
+    return this.match.update({ inProgress: false }, { where: { id } });
+  }
+
+  async updateMatch(id: number, homeTeamGoals: number, awayTeamGoals: number) {
+    return this.match.update({ homeTeamGoals, awayTeamGoals }, { where: { id } });
+  }
+
   // async create(teamName: string) {
   //   const team = await this.create({ teamName });
   //   return team;
   // }
-
-  async finishMatch(id: number) {
-    return this.match.update({ inProgress: false }, { where: { id } });
-  }
 
   // async update(id: number, teamName: string) {
   //   const team = await this.update({ teamName }, { where: { id } });
