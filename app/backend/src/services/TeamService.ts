@@ -12,7 +12,7 @@ export default class TeamService {
   }
 
   async findById(id: number) {
-    const team = await this.teamModel.finById(id);
+    const team = await this.teamModel.findById(id);
 
     if (!team) throw new GenerateErro(401, 'Team not found');
 

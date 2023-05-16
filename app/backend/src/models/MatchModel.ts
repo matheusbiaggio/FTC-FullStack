@@ -9,6 +9,11 @@ export default class MatchModel {
     return allMatch;
   }
 
+  async findById(id: number) {
+    const match = await this.match.scope('withTeams').findByPk(id);
+    return match;
+  }
+
   async findAllInProgress(inProgress: boolean) {
     const matchesInProgress = await this.match.scope('withTeams').findAll({
       where: {
