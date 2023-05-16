@@ -1,4 +1,6 @@
 // import GenerateErro from '../utils/GenerateErro';
+import GenerateErro from '../utils/GenerateErro';
+import IMatch from '../interface/IMatch';
 import MatchModel from '../models/MatchModel';
 
 export default class MatchService {
@@ -22,5 +24,13 @@ export default class MatchService {
 
   async updateMatch(id: number, homeTeamGoals: number, awayTeamGoals: number) {
     await this.matchModel.updateMatch(id, homeTeamGoals, awayTeamGoals);
+  }
+
+  async create(match: IMatch) {
+    const [addMatch, created] = await this.matchModel.findOrCreate(match);
+
+    if (!created) throw new GenerateErro(404, 'Match already exists');
+
+    return addMatch;
   }
 }

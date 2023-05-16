@@ -23,4 +23,10 @@ export default class MatchController {
       .updateMatch(Number(id), Number(homeTeamGoals), Number(awayTeamGoals));
     res.status(200).json({ message: 'Update' });
   }
+
+  async create(req: Request, res: Response) {
+    const match = req.body;
+    const newMatch = await this.matchService.create(match);
+    res.status(201).json(newMatch);
+  }
 }

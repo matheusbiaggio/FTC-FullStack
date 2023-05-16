@@ -1,3 +1,4 @@
+import IMatch from '../interface/IMatch';
 import Match from '../database/models/Match';
 
 export default class MatchModel {
@@ -25,10 +26,13 @@ export default class MatchModel {
     return this.match.update({ homeTeamGoals, awayTeamGoals }, { where: { id } });
   }
 
-  // async create(teamName: string) {
-  //   const team = await this.create({ teamName });
-  //   return team;
-  // }
+  async findOrCreate(match: IMatch) {
+    const addMatch = await this.match.findOrCreate({
+      where: { homeTeamId: match.homeTeamId, awayTeamId: match.awayTeamId, inProgress: true },
+      defaults: { ...match },
+    });
+    return addMatch;
+  }
 
   // async update(id: number, teamName: string) {
   //   const team = await this.update({ teamName }, { where: { id } });

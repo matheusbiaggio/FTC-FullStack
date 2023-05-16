@@ -6,7 +6,7 @@ import chaiHttp = require('chai-http');
 import { app } from '../app';
 
 import Match from '../database/models/Match';
-import matchMock from './mock/matchMock';
+import matchMock, { match } from './mock/matchMock';
 import JWT from '../utils/JWT';
 
 chai.use(chaiHttp);
@@ -127,6 +127,62 @@ describe('Teste do Match', () => {
 
         expect(status).to.be.equal(200);
         expect(body).to.be.deep.equal({ message: 'Update' });
+    });
+  });
+
+  describe('Cadastrar uma nova partida no banco de dados', () => {
+    it('Verifica que não é possível cadastrar sem um token', async () => {
+      const response = await chai.request(app)
+        .post('/matches');
+
+      expect(response.status).to.be.equal(401);
+      expect(response.body.message).to.be.equal('Token not found');
+    });
+    it('Verifica que não é possível cadastrar com um token invalido', async () => {
+      const response = await chai.request(app)
+        .post('/matches')
+        .set('Authorization', 'invalid_token');
+
+      expect(response.status).to.be.equal(401);
+      expect(response.body.message).to.be.equal('Token must be a valid token');
+    });
+    it('Com um token válido, com body inválido', async () => {
+      const { body, status } = await chai
+        .request(app).post('/matches')
+        .auth(token, { type: 'bearer' })
+        .send({
+          homeTeamId: 1,
+          awayTeamId: 2,
+        });
+
+      expect(status).to.be.equal(400);
+      expect(body).to.be.an('object');
+      expect(body).to.be.deep.equal({ message: 'Bad request' });
+    });
+    it('Com um token válido, com body válido', async () => {
+      sinon
+        .stub(Match, 'findOrCreate')
+        .resolves([match as unknown as Match, true]);
+
+      const { body, status } = await chai
+        .request(app).post('/matches')
+        .auth(token, { type: 'bearer' })
+        .send({
+          homeTeamId: 1,
+          awayTeamId: 2,
+          homeTeamGoals: 1,
+          awayTeamGoals: 1
+        });
+
+      expect(status).to.be.equal(201);
+      expect(body).to.be.deep.equal({
+        id: 1,
+        inProgress: true,
+        homeTeamId: 1,
+        awayTeamId: 2,
+        homeTeamGoals: 0,
+        awayTeamGoals: 0
+      });
     });
   });
 })
