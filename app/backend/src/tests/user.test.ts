@@ -80,34 +80,35 @@ describe('Teste para o /login', () => {
       expect(response.body.token).not.to.be.empty;
     });
   });
-  // describe('Testes do método GET de /login/role', () => {
-  //   it('Caso um token não seja enviado, retornar status 401', async () => {
-  //     const response = await chai.request(app)
-  //       .get('/login/role');
 
-  //     expect(response.status).to.be.equal(401);
-  //     expect(response.body.message).to.be.equal('Token not found');
-  //   });
-  //   it('Caso um token sejá enviado, mas não seja válido, retornar status 401', async () => {
-  //     const response = await chai.request(app)
-  //       .get('/login/role')
-  //       .set('Authorization', 'invalid_token');
+  describe('Verifica a lógica do login/role', () => {
+    it('Não é possível acessar o login/role sem token', async () => {
+      const response = await chai.request(app)
+        .get('/login/role');
 
-  //     expect(response.status).to.be.equal(401);
-  //     expect(response.body.message).to.be.equal('Token must be a valid token');
-  //   });
-  //   it('Caso o token seja enviado, e seja válido, retornar status 200', async () => {
-  //     const tokenJWT = new JWT().generateToken({
-  //       email: 'admin@admin.com',
-  //       role: 'admin',
-  //       });
+      expect(response.status).to.be.equal(401);
+      expect(response.body.message).to.be.equal('Token not found');
+    });
+    it('Não é possível acessar o login/role sem token autorizado', async () => {
+      const response = await chai.request(app)
+        .get('/login/role')
+        .set('Authorization', 'invalid_token');
 
-  //     const response = await chai.request(app)
-  //       .get('/login/role')
-  //       .set('Authorization', tokenJWT);
+      expect(response.status).to.be.equal(401);
+      expect(response.body.message).to.be.equal('Token must be a valid token');
+    });
+    it('Possível acessar o login/role com token autorizado', async () => {
+      const tokenJWT = new JWT().generateToken({
+        email: 'admin@admin.com',
+        role: 'admin',
+        });
 
-  //     expect(response.status).to.be.equal(200);
-  //     expect(response.body).to.be.deep.equal({ "role": "admin" });
-  //   });
-  // });
+      const response = await chai.request(app)
+        .get('/login/role')
+        .set('Authorization', tokenJWT);
+
+      expect(response.status).to.be.equal(200);
+      expect(response.body).to.be.deep.equal({ "role": "admin" });
+    });
+  });
 });
