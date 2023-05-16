@@ -34,6 +34,7 @@ describe('Testes do endpoint /leaderboard', () => {
 
       expect(response.status).to.be.equal(200);
       expect(response.body).to.be.deep.equal(leaderboardMock);
+      console.log('oi')
     });
   })
 });
