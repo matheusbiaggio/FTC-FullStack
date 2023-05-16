@@ -23,6 +23,15 @@ export default class MatchModel {
     return matchesInProgress;
   }
 
+  async findAllFinished() {
+    const matchesFinished = await this.match.scope('withTeams').findAll({
+      where: {
+        inProgress: false,
+      },
+    });
+    return matchesFinished;
+  }
+
   async finishMatch(id: number) {
     return this.match.update({ inProgress: false }, { where: { id } });
   }
