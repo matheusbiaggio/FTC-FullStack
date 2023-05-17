@@ -9,17 +9,27 @@ export default class LeaderBoardService {
     private matchModel = new MatchModel(),
   ) { }
 
-  async generateBoard() {
+  async generateBoardHome() {
     const matchesFinished = await this.matchModel.findAllFinished();
 
-    const board = LeaderBoardService.createBoard(matchesFinished);
-    LeaderBoardService.calculateTotals(board, matchesFinished);
+    const board = LeaderBoardService.createBoardHome(matchesFinished);
+    LeaderBoardService.calculateTotalsHome(board, matchesFinished);
     LeaderBoardService.calculatePoints(board);
 
     return board.slice(1);
   }
 
-  static createBoard(matchesFinished: IMatch[]): ILeaderBoard[] {
+  async generateBoardAway() {
+    const matchesFinished = await this.matchModel.findAllFinished();
+
+    const board = LeaderBoardService.createBoardAway(matchesFinished);
+    LeaderBoardService.calculateTotalsAway(board, matchesFinished);
+    LeaderBoardService.calculatePoints(board);
+
+    return board.slice(1);
+  }
+
+  static createBoardHome(matchesFinished: IMatch[]): ILeaderBoard[] {
     const board: ILeaderBoard[] = [];
 
     for (let i = 0; i < matchesFinished.length; i += 1) {
@@ -42,7 +52,30 @@ export default class LeaderBoardService {
     return board;
   }
 
-  static calculateTotals(board: ILeaderBoard[], matchesFinished: IMatch[]) {
+  static createBoardAway(matchesFinished: IMatch[]): ILeaderBoard[] {
+    const board: ILeaderBoard[] = [];
+
+    for (let i = 0; i < matchesFinished.length; i += 1) {
+      const match: IMatch = matchesFinished[i];
+
+      if (!board[match.awayTeamId] && match.awayTeam !== undefined) {
+        board[match.awayTeamId] = {
+          name: match.awayTeam.teamName,
+          totalPoints: 0,
+          totalGames: 0,
+          totalVictories: 0,
+          totalDraws: 0,
+          totalLosses: 0,
+          goalsFavor: 0,
+          goalsOwn: 0,
+        };
+      }
+    }
+
+    return board;
+  }
+
+  static calculateTotalsHome(board: ILeaderBoard[], matchesFinished: IMatch[]) {
     for (let i = 0; i < matchesFinished.length; i += 1) {
       const match: IMatch = matchesFinished[i];
       const teamBoard = board[match.homeTeamId];
@@ -55,6 +88,27 @@ export default class LeaderBoardService {
         if (match.homeTeamGoals > match.awayTeamGoals) {
           teamBoard.totalVictories += 1;
         } else if (match.homeTeamGoals < match.awayTeamGoals) {
+          teamBoard.totalLosses += 1;
+        } else {
+          teamBoard.totalDraws += 1;
+        }
+      }
+    }
+  }
+
+  static calculateTotalsAway(board: ILeaderBoard[], matchesFinished: IMatch[]) {
+    for (let i = 0; i < matchesFinished.length; i += 1) {
+      const match: IMatch = matchesFinished[i];
+      const teamBoard = board[match.awayTeamId];
+
+      if (teamBoard) {
+        teamBoard.totalGames += 1;
+        teamBoard.goalsFavor += match.awayTeamGoals;
+        teamBoard.goalsOwn += match.homeTeamGoals;
+
+        if (match.awayTeamGoals > match.homeTeamGoals) {
+          teamBoard.totalVictories += 1;
+        } else if (match.awayTeamGoals < match.homeTeamGoals) {
           teamBoard.totalLosses += 1;
         } else {
           teamBoard.totalDraws += 1;
